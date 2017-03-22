@@ -19,7 +19,7 @@ type term =
   | TmProj of info * term * string
 
 type binding =
-    NameBind 
+    NameBind
   | VarBind of ty
 
 type context = (string * binding) list
@@ -69,7 +69,7 @@ let rec name2index fi ctx x =
 (* ---------------------------------------------------------------------- *)
 (* Shifting *)
 
-let tmmap onvar c t = 
+let tmmap onvar c t =
   let rec walk c t = match t with
     TmVar(fi,x,n) -> onvar fi c x n
   | TmAbs(fi,x,tyT1,t2) -> TmAbs(fi,x,tyT1,walk (c+1) t2)
@@ -95,7 +95,7 @@ let termSubst j s t =
     (fun fi j x n -> if x=j then termShift j s else TmVar(fi,x,n))
     j t
 
-let termSubstTop s t = 
+let termSubstTop s t =
   termShift (-1) (termSubst 0 (termShift 1 s) t)
 
 (* ---------------------------------------------------------------------- *)
@@ -104,7 +104,7 @@ let termSubstTop s t =
 let rec getbinding fi ctx i =
   try
     let (_,bind) = List.nth ctx i in
-    bind 
+    bind
   with Failure _ ->
     let msg =
       Printf.sprintf "Variable lookup failure: offset: %d, ctx size: %d" in
@@ -112,9 +112,9 @@ let rec getbinding fi ctx i =
  let getTypeFromContext fi ctx i =
    match getbinding fi ctx i with
        VarBind(tyT) -> tyT
-     | _ -> error fi 
-       ("getTypeFromContext: Wrong kind of binding for variable " 
-        ^ (index2name fi ctx i)) 
+     | _ -> error fi
+       ("getTypeFromContext: Wrong kind of binding for variable "
+        ^ (index2name fi ctx i))
 (* ---------------------------------------------------------------------- *)
 (* Extracting file info *)
 
@@ -123,7 +123,7 @@ let tmInfo t = match t with
   | TmAbs(fi,_,_,_) -> fi
   | TmApp(fi, _, _) -> fi
   | TmProj(fi,_,_) -> fi
-  | TmRecord(fi,_) -> fi 
+  | TmRecord(fi,_) -> fi
 
 (* ---------------------------------------------------------------------- *)
 (* Printing *)
@@ -138,7 +138,7 @@ let tmInfo t = match t with
      break  Insert a breakpoint indicating where the line maybe broken if
             necessary.
   See the documentation for the Format module in the OCaml library for
-  more details. 
+  more details.
 *)
 
 let obox0() = open_hvbox 0
@@ -146,7 +146,7 @@ let obox() = open_hvbox 2
 let cbox() = close_box()
 let break() = print_break 0 0
 
-let small t = 
+let small t =
   match t with
     TmVar(_,_,_) -> true
   | _ -> false
@@ -154,9 +154,9 @@ let small t =
 let rec printty_Type outer tyT = match tyT with
       tyT -> printty_ArrowType outer tyT
 
-and printty_ArrowType outer  tyT = match tyT with 
+and printty_ArrowType outer  tyT = match tyT with
     TyArr(tyT1,tyT2) ->
-      obox0(); 
+      obox0();
       printty_AType false tyT1;
       if outer then pr " ";
       pr "->";
@@ -168,20 +168,20 @@ and printty_ArrowType outer  tyT = match tyT with
 and printty_AType outer tyT = match tyT with
     TyRecord(fields) ->
         let pf i (li,tyTi) =
-          if (li <> ((string_of_int i))) then (pr li; pr ":"); 
-          printty_Type false tyTi 
-        in let rec p i l = match l with 
+          if (li <> ((string_of_int i))) then (pr li; pr ":");
+          printty_Type false tyTi
+        in let rec p i l = match l with
             [] -> ()
           | [f] -> pf i f
           | f::rest ->
-              pf i f; pr","; if outer then print_space() else break(); 
+              pf i f; pr","; if outer then print_space() else break();
               p (i+1) rest
         in pr "{"; open_hovbox 0; p 1 fields; pr "}"; cbox()
   | TyTop -> pr "Top"
   | TyBot -> pr "Bot"
   | tyT -> pr "("; printty_Type outer tyT; pr ")"
 
-let printty tyT = printty_Type true tyT 
+let printty tyT = printty_Type true tyT
 
 let rec printtm_Term outer ctx t = match t with
     TmAbs(fi,x,tyT1,t2) ->
@@ -218,21 +218,21 @@ and printtm_ATerm outer ctx t = match t with
             ^ " }]")
   | TmRecord(fi, fields) ->
        let pf i (li,ti) =
-         if (li <> ((string_of_int i))) then (pr li; pr "="); 
-         printtm_Term false ctx ti 
+         if (li <> ((string_of_int i))) then (pr li; pr "=");
+         printtm_Term false ctx ti
        in let rec p i l = match l with
            [] -> ()
          | [f] -> pf i f
          | f::rest ->
-             pf i f; pr","; if outer then print_space() else break(); 
+             pf i f; pr","; if outer then print_space() else break();
              p (i+1) rest
        in pr "{"; open_hovbox 0; p 1 fields; pr "}"; cbox()
   | t -> pr "("; printtm_Term outer ctx t; pr ")"
 
-let printtm ctx t = printtm_Term true ctx t 
+let printtm ctx t = printtm_Term true ctx t
 
 let prbinding ctx b = match b with
     NameBind -> ()
-  | VarBind(tyT) -> pr ": "; printty tyT 
+  | VarBind(tyT) -> pr ": "; printty tyT
 
 

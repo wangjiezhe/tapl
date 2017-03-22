@@ -6,6 +6,6 @@
 open Syntax
 open Support.Error
 
-val eval : context -> term -> term 
+val eval : context -> term -> term
 val typeof : context -> term -> ty
 val subtype : ty -> ty -> bool

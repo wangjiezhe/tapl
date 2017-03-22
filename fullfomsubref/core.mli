@@ -13,7 +13,7 @@ val kindof : context -> ty -> kind
 
 type store
 val emptystore : store
-val shiftstore : int -> store -> store 
+val shiftstore : int -> store -> store
 val eval : context -> store -> term -> term * store
 val evalbinding : context -> store -> binding -> binding * store
 val lcst : context -> ty -> ty

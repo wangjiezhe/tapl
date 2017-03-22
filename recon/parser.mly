@@ -1,4 +1,4 @@
-/*  
+/*
  *  Yacc grammar for the parser.  The files parser.mli and parser.ml
  *  are generated automatically from parser.mly.
  */
@@ -83,7 +83,7 @@ open Syntax
 /* ---------------------------------------------------------------------- */
 /* The starting production of the generated parser is the syntactic class
    toplevel.  The type that is returned when a toplevel is recognized is
-     Syntax.context -> (Syntax.command list * Syntax.context) 
+     Syntax.context -> (Syntax.command list * Syntax.context)
    that is, the parser returns to the user program a function that,
    when given a naming context, returns a fully parsed list of
    Syntax.commands and the new naming context that results when
@@ -93,7 +93,7 @@ open Syntax
    they take a context as argument and return a fully parsed abstract
    syntax tree (and, if they involve any constructs that bind variables
    in some following phrase, a new context).
-   
+
 */
 
 %start toplevel
@@ -116,7 +116,7 @@ toplevel :
 
 /* A top-level command */
 Command :
-  | Term 
+  | Term
       { fun ctx -> (let t = $1 ctx in Eval(tmInfo t,t)),ctx }
   | LCID Binder
       { fun ctx -> ((Bind($1.i,$1.v,$2 ctx)), addname ctx $1.v) }
@@ -133,13 +133,13 @@ Type :
 
 /* Atomic types are those that never need extra parentheses */
 AType :
-    LPAREN Type RPAREN  
-           { $2 } 
+    LPAREN Type RPAREN
+           { $2 }
   | BOOL
       { fun ctx -> TyBool }
   | NAT
       { fun ctx -> TyNat }
-  | UCID 
+  | UCID
       { fun ctx ->
           TyId($1.v) }
 
@@ -156,11 +156,11 @@ Term :
       { $1 }
   | IF Term THEN Term ELSE Term
       { fun ctx -> TmIf($1, $2 ctx, $4 ctx, $6 ctx) }
-  | LAMBDA LCID COLON Type DOT Term 
+  | LAMBDA LCID COLON Type DOT Term
       { fun ctx ->
           let ctx1 = addname ctx $2.v in
           TmAbs($1, $2.v, $4 ctx, $6 ctx1) }
-  | LAMBDA USCORE COLON Type DOT Term 
+  | LAMBDA USCORE COLON Type DOT Term
       { fun ctx ->
           let ctx1 = addname ctx "_" in
           TmAbs($1, "_", $4 ctx, $6 ctx1) }
@@ -182,8 +182,8 @@ AppTerm :
 
 /* Atomic terms are ones that never require extra parentheses */
 ATerm :
-    LPAREN Term RPAREN  
-      { $2 } 
+    LPAREN Term RPAREN
+      { $2 }
   | TRUE
       { fun ctx -> TmTrue($1) }
   | FALSE
@@ -194,7 +194,7 @@ ATerm :
               0 -> TmZero($1.i)
             | n -> TmSucc($1.i, f (n-1))
           in f $1.v }
-  | LCID 
+  | LCID
       { fun ctx ->
           TmVar($1.i, name2index $1.i ctx $1.v, ctxlength ctx) }
 

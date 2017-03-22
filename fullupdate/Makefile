@@ -1,4 +1,4 @@
-# 
+#
 # Rules for compiling and linking the typechecker/evaluator
 #
 # Type
@@ -7,9 +7,9 @@
 #   make test    to rebuild the executable and run it on input file test.f
 #   make clean   to remove all intermediate and temporary files
 #   make depend  to rebuild the intermodule dependency graph that is used
-#                  by make to determine which order to schedule 
+#                  by make to determine which order to schedule
 #	           compilations.  You should not need to do this unless
-#                  you add new modules or new dependencies between 
+#                  you add new modules or new dependencies between
 #                  existing modules.  (The graph is stored in the file
 #                  .depend)
 
@@ -18,9 +18,9 @@
 OBJS = support.cmo syntax.cmo core.cmo parser.cmo lexer.cmo main.cmo
 
 # Files that need to be generated from other files
-DEPEND += lexer.ml parser.ml 
+DEPEND += lexer.ml parser.ml
 
-# When "make" is invoked with no arguments, we build an executable 
+# When "make" is invoked with no arguments, we build an executable
 # typechecker, after building everything that it depends on
 all: $(DEPEND) $(OBJS) f
 
@@ -32,14 +32,14 @@ windows: $(DEPEND) $(OBJS) f.exe
 include .depend
 
 # Build an executable typechecker
-f: $(OBJS) main.cmo 
+f: $(OBJS) main.cmo
 	@echo Linking $@
-	ocamlc -o $@ $(COMMONOBJS) $(OBJS) 
+	ocamlc -o $@ $(COMMONOBJS) $(OBJS)
 
 # Build an executable typechecker for Windows
-f.exe: $(OBJS) main.cmo 
+f.exe: $(OBJS) main.cmo
 	@echo Linking $@
-	ocamlc -o $@ $(COMMONOBJS) $(OBJS) 
+	ocamlc -o $@ $(COMMONOBJS) $(OBJS)
 
 # Build and test
 test: all
@@ -71,7 +71,7 @@ clean::
 	   f f.exe TAGS *~ *.bak
 
 # Rebuild intermodule dependencies
-depend:: $(DEPEND) 
+depend:: $(DEPEND)
 	ocamldep $(INCLUDE) *.mli *.ml > .depend
 
-# 
+#

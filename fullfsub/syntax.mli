@@ -45,7 +45,7 @@ type term =
   | TmUnpack of info * string * string * term * term
 
 type binding =
-    NameBind 
+    NameBind
   | TyVarBind of ty
   | VarBind of ty
   | TyAbbBind of ty
@@ -58,7 +58,7 @@ type command =
 
 (* Contexts *)
 type context
-val emptycontext : context 
+val emptycontext : context
 val ctxlength : context -> int
 val addbinding : context -> string -> binding -> context
 val addname: context -> string -> context

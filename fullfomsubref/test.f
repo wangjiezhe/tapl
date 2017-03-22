@@ -1,9 +1,9 @@
 /* Examples for testing */
 
  lambda x:Bot. x;
- lambda x:Bot. x x; 
+ lambda x:Bot. x x;
 
- 
+
 lambda x:<a:Bool,b:Bool>. x;
 
 
@@ -12,8 +12,8 @@ lambda x:Top. x;
 (lambda x:Top->Top. x) (lambda x:Top. x);
 
 
-(lambda r:{x:Top->Top}. r.x r.x) 
-  {x=lambda z:Top.z, y=lambda z:Top.z}; 
+(lambda r:{x:Top->Top}. r.x r.x)
+  {x=lambda z:Top.z, y=lambda z:Top.z};
 
 
 "hello";
@@ -24,25 +24,25 @@ lambda x:A. x;
 
 let x=true in x;
 
-{x=true, y=false}; 
+{x=true, y=false};
 {x=true, y=false}.x;
-{true, false}; 
-{true, false}.1; 
+{true, false};
+{true, false}.1;
 
 
 if true then {x=true,y=false,a=false} else {y=false,x={},b=false};
 
 timesfloat 2.0 3.14159;
 
-lambda X. lambda x:X. x; 
-(lambda X. lambda x:X. x) [All X.X->X]; 
+lambda X. lambda x:X. x;
+(lambda X. lambda x:X. x) [All X.X->X];
 
-lambda X<:Top->Top. lambda x:X. x x; 
+lambda X<:Top->Top. lambda x:X. x x;
 
 
 lambda x:Bool. x;
-(lambda x:Bool->Bool. if x false then true else false) 
-  (lambda x:Bool. if x then false else true); 
+(lambda x:Bool->Bool. if x false then true else false)
+  (lambda x:Bool. if x then false else true);
 
 if error then true else false;
 
@@ -55,7 +55,7 @@ error true;
 
 
 lambda x:Nat. succ x;
-(lambda x:Nat. succ (succ x)) (succ 0); 
+(lambda x:Nat. succ (succ x)) (succ 0);
 
 T = Nat->Nat;
 lambda f:T. lambda x:Nat. f (f x);
@@ -67,7 +67,7 @@ lambda f:T. lambda x:Nat. f (f x);
 
 CounterRep = {x: Ref Nat};
 
-SetCounter = {get:Unit->Nat, set:Nat->Unit, inc:Unit->Unit}; 
+SetCounter = {get:Unit->Nat, set:Nat->Unit, inc:Unit->Unit};
 
 setCounterClass =
 lambda r:CounterRep.
@@ -75,10 +75,10 @@ lambda self: Unit->SetCounter.
 lambda _:Unit.
 {get = lambda _:Unit. !(r.x),
 set = lambda i:Nat.  r.x:=i,
-inc = lambda _:Unit. (self unit).set (succ((self unit).get unit))} 
+inc = lambda _:Unit. (self unit).set (succ((self unit).get unit))}
     as SetCounter;
 
-newSetCounter = 
+newSetCounter =
 lambda _:Unit.
 let r = {x=ref 1} in
 fix (setCounterClass r) unit;
@@ -86,8 +86,8 @@ fix (setCounterClass r) unit;
 c = newSetCounter unit;
 c.get unit;
 
-InstrCounter = {get:Unit->Nat, 
-set:Nat->Unit, 
+InstrCounter = {get:Unit->Nat,
+set:Nat->Unit,
 inc:Unit->Unit,
 accesses:Unit->Nat};
 
@@ -103,7 +103,7 @@ set = lambda i:Nat. (r.a:=succ(!(r.a)); super.set i),
 inc = super.inc,
 accesses = lambda _:Unit. !(r.a)} as InstrCounter;
 
-newInstrCounter = 
+newInstrCounter =
 lambda _:Unit.
 let r = {x=ref 1, a=ref 0} in
 fix (instrCounterClass r) unit;
@@ -132,7 +132,7 @@ set = lambda i:Nat. (r.a:=succ(!(r.a)); super.set i),
 inc = super.inc,
 accesses = lambda _:Unit. !(r.a)} as InstrCounter;
 
-ResetInstrCounter = {get:Unit->Nat, set:Nat->Unit, 
+ResetInstrCounter = {get:Unit->Nat, set:Nat->Unit,
 inc:Unit->Unit, accesses:Unit->Nat,
 reset:Unit->Unit};
 
@@ -145,10 +145,10 @@ let super = instrCounterClass r self unit in
 set = super.set,
 inc = super.inc,
 accesses = super.accesses,
-reset = lambda _:Unit. r.x:=0} 
+reset = lambda _:Unit. r.x:=0}
 as ResetInstrCounter;
 
-BackupInstrCounter = {get:Unit->Nat, set:Nat->Unit, 
+BackupInstrCounter = {get:Unit->Nat, set:Nat->Unit,
 inc:Unit->Unit, accesses:Unit->Nat,
 backup:Unit->Unit, reset:Unit->Unit};
 
@@ -164,10 +164,10 @@ set = super.set,
 inc = super.inc,
 accesses = super.accesses,
 reset = lambda _:Unit. r.x:=!(r.b),
-backup = lambda _:Unit. r.b:=!(r.x)} 
+backup = lambda _:Unit. r.b:=!(r.x)}
 as BackupInstrCounter;
 
-newBackupInstrCounter = 
+newBackupInstrCounter =
 lambda _:Unit.
 let r = {x=ref 1, a=ref 0, b=ref 0} in
 fix (backupInstrCounterClass r) unit;
@@ -188,36 +188,36 @@ ic.accesses unit;
 
 
 /*
-SetCounterMethodTable =  
-{get: Ref <none:Unit, some:Unit->Nat>, 
-set: Ref <none:Unit, some:Nat->Unit>, 
-inc: Ref <none:Unit, some:Unit->Unit>}; 
+SetCounterMethodTable =
+{get: Ref <none:Unit, some:Unit->Nat>,
+set: Ref <none:Unit, some:Nat->Unit>,
+inc: Ref <none:Unit, some:Unit->Unit>};
 
-packGet = 
-lambda f:Unit->Nat. 
+packGet =
+lambda f:Unit->Nat.
 <some = f> as <none:Unit, some:Unit->Nat>;
 
-unpackGet = 
+unpackGet =
 lambda mt:SetCounterMethodTable.
 case !(mt.get) of
 <none=x> ==> error
 | <some=f> ==> f;
 
-packSet = 
-lambda f:Nat->Unit. 
+packSet =
+lambda f:Nat->Unit.
 <some = f> as <none:Unit, some:Nat->Unit>;
 
-unpackSet = 
+unpackSet =
 lambda mt:SetCounterMethodTable.
 case !(mt.set) of
 <none=x> ==> error
 | <some=f> ==> f;
 
-packInc = 
-lambda f:Unit->Unit. 
+packInc =
+lambda f:Unit->Unit.
 <some = f> as <none:Unit, some:Unit->Unit>;
 
-unpackInc = 
+unpackInc =
 lambda mt:SetCounterMethodTable.
 case !(mt.inc) of
 <none=x> ==> error
@@ -239,16 +239,16 @@ lambda self: R->SetCounter.
 lambda r: R.
 {get = lambda _:Unit. !(r.x),
 set = lambda i:Nat.  r.x:=i,
-inc = lambda _:Unit. (self r).set (succ((self r).get unit))} 
+inc = lambda _:Unit. (self r).set (succ((self r).get unit))}
     as SetCounter;
 
-newSetCounter = 
+newSetCounter =
 lambda _:Unit.
 let r = {x=ref 1} in
 fix (setCounterClass [CounterRep]) r;
 
-InstrCounter = {get:Unit->Nat, 
-set:Nat->Unit, 
+InstrCounter = {get:Unit->Nat,
+set:Nat->Unit,
 inc:Unit->Unit,
 accesses:Unit->Nat};
 
@@ -265,7 +265,7 @@ inc = (super r).inc,
 accesses = lambda _:Unit. !(r.a)} as InstrCounter;
 
 
-newInstrCounter = 
+newInstrCounter =
 lambda _:Unit.
 let r = {x=ref 1, a=ref 0} in
 fix (instrCounterClass [InstrCounterRep]) r;
@@ -294,11 +294,11 @@ lambda self: Ref(R->M).
 lambda r: R.
 {get = lambda _:Unit. !(r.x),
 set = lambda i:Nat.  r.x:=i,
-inc = lambda _:Unit. (!self r).set (succ((!self r).get unit))} 
+inc = lambda _:Unit. (!self r).set (succ((!self r).get unit))}
       as SetCounter;
 
 
-newSetCounter = 
+newSetCounter =
 lambda _:Unit.
 let m = ref (lambda r:CounterRep. error as SetCounter) in
 let m' = setCounterClass [SetCounter] [CounterRep] m in
@@ -323,11 +323,11 @@ lambda self: Ref(R->M).
 lambda r: R.
 {get = lambda _:Unit. !(r.x),
 set = lambda i:Nat.  r.x:=i,
-inc = lambda _:Unit. (!self r).set (succ((!self r).get unit))} 
+inc = lambda _:Unit. (!self r).set (succ((!self r).get unit))}
       as SetCounter;
 
-InstrCounter = {get:Unit->Nat, 
-set:Nat->Unit, 
+InstrCounter = {get:Unit->Nat,
+set:Nat->Unit,
 inc:Unit->Unit,
 accesses:Unit->Nat};
 
@@ -344,7 +344,7 @@ set = lambda i:Nat. (r.a:=succ(!(r.a)); (super r).set i),
 inc = (super r).inc,
 accesses = lambda _:Unit. !(r.a)}     as InstrCounter;
 
-newInstrCounter = 
+newInstrCounter =
 lambda _:Unit.
 let m = ref (lambda r:InstrCounterRep. error as InstrCounter) in
 let m' = instrCounterClass [InstrCounter] [InstrCounterRep] m in
@@ -390,7 +390,7 @@ as InstrCounter;
 
 setCounterClass =
 lambda r:CounterRep.
-lambda self: Source SetCounter.     
+lambda self: Source SetCounter.
 {get = lambda _:Unit. !(r.x),
 set = lambda i:Nat. r.x:=i,
 inc = lambda _:Unit. (!self).set (succ ((!self).get unit))}

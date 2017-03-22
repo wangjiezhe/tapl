@@ -27,7 +27,7 @@ let tmInfo t = match t with
   | TmZero(fi) -> fi
   | TmSucc(fi,_) -> fi
   | TmPred(fi,_) -> fi
-  | TmIsZero(fi,_) -> fi 
+  | TmIsZero(fi,_) -> fi
 
 (* ---------------------------------------------------------------------- *)
 (* Printing *)
@@ -42,7 +42,7 @@ let tmInfo t = match t with
      break  Insert a breakpoint indicating where the line maybe broken if
             necessary.
   See the documentation for the Format module in the OCaml library for
-  more details. 
+  more details.
 *)
 
 let obox0() = open_hvbox 0
@@ -84,7 +84,7 @@ and printtm_ATerm outer t = match t with
      in f 1 t1
   | t -> pr "("; printtm_Term outer t; pr ")"
 
-let printtm t = printtm_Term true t 
+let printtm t = printtm_Term true t
 
 
 

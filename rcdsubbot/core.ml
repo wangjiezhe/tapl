@@ -22,12 +22,12 @@ let rec eval1 ctx t = match t with
       let t1' = eval1 ctx t1 in
       TmApp(fi, t1', t2)
   | TmRecord(fi,fields) ->
-      let rec evalafield l = match l with 
+      let rec evalafield l = match l with
         [] -> raise NoRuleApplies
-      | (l,vi)::rest when isval ctx vi -> 
+      | (l,vi)::rest when isval ctx vi ->
           let rest' = evalafield rest in
           (l,vi)::rest'
-      | (l,ti)::rest -> 
+      | (l,ti)::rest ->
           let ti' = eval1 ctx ti in
           (l, ti')::rest
       in let fields' = evalafield fields in
@@ -38,7 +38,7 @@ let rec eval1 ctx t = match t with
   | TmProj(fi, t1, l) ->
       let t1' = eval1 ctx t1 in
       TmProj(fi, t1', l)
-  | _ -> 
+  | _ ->
       raise NoRuleApplies
 
 let rec eval ctx t =
@@ -51,20 +51,20 @@ let rec eval ctx t =
 let rec subtype tyS tyT =
    (=) tyS tyT ||
    match (tyS,tyT) with
-     (_,TyTop) -> 
+     (_,TyTop) ->
        true
-   | (TyBot,_) -> 
+   | (TyBot,_) ->
        true
    | (TyArr(tyS1,tyS2),TyArr(tyT1,tyT2)) ->
        (subtype tyT1 tyS1) && (subtype tyS2 tyT2)
    | (TyRecord(fS), TyRecord(fT)) ->
        List.for_all
-         (fun (li,tyTi) -> 
+         (fun (li,tyTi) ->
             try let tySi = List.assoc li fS in
                 subtype tySi tyTi
             with Not_found -> false)
          fT
-   | (_,_) -> 
+   | (_,_) ->
        false
 
 (* ------------------------   TYPING  ------------------------ *)
@@ -72,7 +72,7 @@ let rec subtype tyS tyT =
 let rec typeof ctx t =
   match t with
     TmRecord(fi, fields) ->
-      let fieldtys = 
+      let fieldtys =
         List.map (fun (li,ti) -> (li, typeof ctx ti)) fields in
       TyRecord(fieldtys)
   | TmVar(fi,i,_) -> getTypeFromContext fi ctx i
@@ -86,7 +86,7 @@ let rec typeof ctx t =
       (match tyT1 with
           TyArr(tyT11,tyT12) ->
             if subtype tyT2 tyT11 then tyT12
-            else error fi "parameter type mismatch" 
+            else error fi "parameter type mismatch"
         | TyBot -> TyBot
         | _ -> error fi "arrow type expected")
   | TmProj(fi, t1, l) ->

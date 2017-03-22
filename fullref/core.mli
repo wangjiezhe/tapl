@@ -12,6 +12,6 @@ val tyeqv : context -> ty -> ty -> bool
 val simplifyty : context -> ty -> ty
 type store
 val emptystore : store
-val shiftstore : int -> store -> store 
+val shiftstore : int -> store -> store
 val eval : context -> store -> term -> term * store
 val evalbinding : context -> store -> binding -> binding * store

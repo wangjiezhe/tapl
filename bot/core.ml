@@ -20,7 +20,7 @@ let rec eval1 ctx t = match t with
   | TmApp(fi,t1,t2) ->
       let t1' = eval1 ctx t1 in
       TmApp(fi, t1', t2)
-  | _ -> 
+  | _ ->
       raise NoRuleApplies
 
 let rec eval ctx t =
@@ -33,13 +33,13 @@ let rec eval ctx t =
 let rec subtype tyS tyT =
    (=) tyS tyT ||
    match (tyS,tyT) with
-     (_,TyTop) -> 
+     (_,TyTop) ->
        true
-   | (TyBot,_) -> 
+   | (TyBot,_) ->
        true
    | (TyArr(tyS1,tyS2),TyArr(tyT1,tyT2)) ->
        (subtype tyT1 tyS1) && (subtype tyS2 tyT2)
-   | (_,_) -> 
+   | (_,_) ->
        false
 
 (* ------------------------   TYPING  ------------------------ *)
@@ -57,6 +57,6 @@ let rec typeof ctx t =
       (match tyT1 with
           TyArr(tyT11,tyT12) ->
             if subtype tyT2 tyT11 then tyT12
-            else error fi "parameter type mismatch" 
+            else error fi "parameter type mismatch"
         | TyBot -> TyBot
         | _ -> error fi "arrow type expected")

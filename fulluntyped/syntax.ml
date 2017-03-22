@@ -24,7 +24,7 @@ type term =
   | TmLet of info * string * term * term
 
 type binding =
-    NameBind 
+    NameBind
   | TmAbbBind of term
 
 type context = (string * binding) list
@@ -74,7 +74,7 @@ let rec name2index fi ctx x =
 (* ---------------------------------------------------------------------- *)
 (* Shifting *)
 
-let tmmap onvar c t = 
+let tmmap onvar c t =
   let rec walk c t = match t with
     TmTrue(fi) as t -> t
   | TmFalse(fi) as t -> t
@@ -117,7 +117,7 @@ let termSubst j s t =
     0
     t
 
-let termSubstTop s t = 
+let termSubstTop s t =
   termShift (-1) (termSubst 0 (termShift 1 s) t)
 
 (* ---------------------------------------------------------------------- *)
@@ -126,12 +126,12 @@ let termSubstTop s t =
 let rec getbinding fi ctx i =
   try
     let (_,bind) = List.nth ctx i in
-    bindingshift (i+1) bind 
+    bindingshift (i+1) bind
   with Failure _ ->
     let msg =
       Printf.sprintf "Variable lookup failure: offset: %d, ctx size: %d" in
     error fi (msg i (List.length ctx))
- 
+
 (* ---------------------------------------------------------------------- *)
 (* Extracting file info *)
 
@@ -151,7 +151,7 @@ let tmInfo t = match t with
   | TmSucc(fi,_) -> fi
   | TmPred(fi,_) -> fi
   | TmIsZero(fi,_) -> fi
-  | TmLet(fi,_,_,_) -> fi 
+  | TmLet(fi,_,_,_) -> fi
 
 (* ---------------------------------------------------------------------- *)
 (* Printing *)
@@ -166,7 +166,7 @@ let tmInfo t = match t with
      break  Insert a breakpoint indicating where the line maybe broken if
             necessary.
   See the documentation for the Format module in the OCaml library for
-  more details. 
+  more details.
 *)
 
 let obox0() = open_hvbox 0
@@ -174,7 +174,7 @@ let obox() = open_hvbox 2
 let cbox() = close_box()
 let break() = print_break 0 0
 
-let small t = 
+let small t =
   match t with
     TmVar(_,_,_) -> true
   | _ -> false
@@ -199,7 +199,7 @@ let rec printtm_Term outer ctx t = match t with
             cbox())
   | TmLet(fi, x, t1, t2) ->
        obox0();
-       pr "let "; pr x; pr " = "; 
+       pr "let "; pr x; pr " = ";
        printtm_Term false ctx t1;
        print_space(); pr "in"; print_space();
        printtm_Term false (addname ctx x) t2;
@@ -214,7 +214,7 @@ and printtm_AppTerm outer ctx t = match t with
       printtm_ATerm false ctx t2;
       cbox()
   | TmTimesfloat(_,t1,t2) ->
-       pr "timesfloat "; printtm_ATerm false ctx t2; 
+       pr "timesfloat "; printtm_ATerm false ctx t2;
        pr " "; printtm_ATerm false ctx t2
   | TmPred(_,t1) ->
        pr "pred "; printtm_ATerm false ctx t1
@@ -240,13 +240,13 @@ and printtm_ATerm outer ctx t = match t with
             ^ " }]")
   | TmRecord(fi, fields) ->
        let pf i (li,ti) =
-         if (li <> ((string_of_int i))) then (pr li; pr "="); 
-         printtm_Term false ctx ti 
+         if (li <> ((string_of_int i))) then (pr li; pr "=");
+         printtm_Term false ctx ti
        in let rec p i l = match l with
            [] -> ()
          | [f] -> pf i f
          | f::rest ->
-             pf i f; pr","; if outer then print_space() else break(); 
+             pf i f; pr","; if outer then print_space() else break();
              p (i+1) rest
        in pr "{"; open_hovbox 0; p 1 fields; pr "}"; cbox()
   | TmFloat(_,s) -> pr (string_of_float s)
@@ -261,10 +261,10 @@ and printtm_ATerm outer ctx t = match t with
      in f 1 t1
   | t -> pr "("; printtm_Term outer ctx t; pr ")"
 
-let printtm ctx t = printtm_Term true ctx t 
+let printtm ctx t = printtm_Term true ctx t
 
 let prbinding ctx b = match b with
     NameBind -> ()
-  | TmAbbBind(t) -> pr "= "; printtm ctx t 
+  | TmAbbBind(t) -> pr "= "; printtm ctx t
 
 

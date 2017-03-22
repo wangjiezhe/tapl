@@ -1,4 +1,4 @@
-/*  
+/*
  *  Yacc grammar for the parser.  The files parser.mli and parser.ml
  *  are generated automatically from parser.mly.
  */
@@ -97,7 +97,7 @@ open Syntax
 /* ---------------------------------------------------------------------- */
 /* The starting production of the generated parser is the syntactic class
    toplevel.  The type that is returned when a toplevel is recognized is
-     Syntax.context -> (Syntax.command list * Syntax.context) 
+     Syntax.context -> (Syntax.command list * Syntax.context)
    that is, the parser returns to the user program a function that,
    when given a naming context, returns a fully parsed list of
    Syntax.commands and the new naming context that results when
@@ -107,7 +107,7 @@ open Syntax
    they take a context as argument and return a fully parsed abstract
    syntax tree (and, if they involve any constructs that bind variables
    in some following phrase, a new context).
-   
+
 */
 
 %start toplevel
@@ -130,7 +130,7 @@ toplevel :
 
 /* A top-level command */
 Command :
-  | Term 
+  | Term
       { fun ctx -> (let t = $1 ctx in Eval(tmInfo t,t)),ctx }
   | UCID TyBinder
       { fun ctx -> ((Bind($1.i, $1.v, $2 ctx)), addname ctx $1.v) }
@@ -146,7 +146,7 @@ Command :
 Binder :
     COLON Type
       { fun ctx -> VarBind ($2 ctx)}
-  | EQ Term 
+  | EQ Term
       { fun ctx -> TmAbbBind($2 ctx, None) }
 
 /* All type expressions */
@@ -160,13 +160,13 @@ Type :
 
 /* Atomic types are those that never need extra parentheses */
 AType :
-    LPAREN Type RPAREN  
-           { $2 } 
-  | UCID 
+    LPAREN Type RPAREN
+           { $2 }
+  | UCID
       { fun ctx ->
           if isnamebound ctx $1.v then
             TyVar(name2index $1.i ctx $1.v, ctxlength ctx)
-          else 
+          else
             TyId($1.v) }
   | USTRING
       { fun ctx -> TyString }
@@ -203,11 +203,11 @@ ArrowType :
 Term :
     AppTerm
       { $1 }
-  | LAMBDA LCID COLON Type DOT Term 
+  | LAMBDA LCID COLON Type DOT Term
       { fun ctx ->
           let ctx1 = addname ctx $2.v in
           TmAbs($1, $2.v, $4 ctx, $6 ctx1) }
-  | LAMBDA USCORE COLON Type DOT Term 
+  | LAMBDA USCORE COLON Type DOT Term
       { fun ctx ->
           let ctx1 = addname ctx "_" in
           TmAbs($1, "_", $4 ctx, $6 ctx1) }
@@ -216,8 +216,8 @@ Term :
   | LET USCORE EQ Term IN Term
       { fun ctx -> TmLet($1, "_", $4 ctx, $6 (addname ctx "_")) }
   | LETREC LCID COLON Type EQ Term IN Term
-      { fun ctx -> 
-          let ctx1 = addname ctx $2.v in 
+      { fun ctx ->
+          let ctx1 = addname ctx $2.v in
           TmLet($1, $2.v, TmFix($1, TmAbs($1, $2.v, $4 ctx, $6 ctx1)),
                 $8 ctx1) }
   | IF Term THEN Term ELSE Term
@@ -227,7 +227,7 @@ Term :
           let ctx1 = addname ctx $3.v in
           let ctx2 = addname ctx1 $5.v in
           TmUnpack($1,$3.v,$5.v,$8 ctx,$10 ctx2) }
-  | LAMBDA UCID DOT Term 
+  | LAMBDA UCID DOT Term
       { fun ctx ->
           let ctx1 = addname ctx $2.v in
           TmTAbs($1,$2.v,$4 ctx1) }
@@ -292,19 +292,19 @@ FieldType :
       { fun ctx i -> (string_of_int i, $1 ctx) }
 
 TermSeq :
-    Term 
+    Term
       { $1 }
-  | Term SEMI TermSeq 
+  | Term SEMI TermSeq
       { fun ctx ->
           TmApp($2, TmAbs($2, "_", TyUnit, $3 (addname ctx "_")), $1 ctx) }
 
 /* Atomic terms are ones that never require extra parentheses */
 ATerm :
-    LPAREN TermSeq RPAREN  
-      { $2 } 
-  | INERT LSQUARE Type RSQUARE 
+    LPAREN TermSeq RPAREN
+      { $2 }
+  | INERT LSQUARE Type RSQUARE
       { fun ctx -> TmInert($1, $3 ctx) }
-  | LCID 
+  | LCID
       { fun ctx ->
           TmVar($1.i, name2index $1.i ctx $1.v, ctxlength ctx) }
   | STRINGV

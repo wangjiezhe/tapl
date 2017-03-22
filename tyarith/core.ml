@@ -43,7 +43,7 @@ let rec eval1 t = match t with
   | TmIsZero(fi,t1) ->
       let t1' = eval1 t1 in
       TmIsZero(fi, t1')
-  | _ -> 
+  | _ ->
       raise NoRuleApplies
 
 let rec eval t =
@@ -55,9 +55,9 @@ let rec eval t =
 
 let rec typeof t =
   match t with
-    TmTrue(fi) -> 
+    TmTrue(fi) ->
       TyBool
-  | TmFalse(fi) -> 
+  | TmFalse(fi) ->
       TyBool
   | TmIf(fi,t1,t2,t3) ->
      if (=) (typeof t1) TyBool then

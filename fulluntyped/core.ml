@@ -32,7 +32,7 @@ let rec eval1 ctx t = match t with
       TmIf(fi, t1', t2, t3)
   | TmVar(fi,n,_) ->
       (match getbinding fi ctx n with
-          TmAbbBind(t) -> t 
+          TmAbbBind(t) -> t
         | _ -> raise NoRuleApplies)
   | TmApp(fi,TmAbs(_,x,t12),v2) when isval ctx v2 ->
       termSubstTop v2 t12
@@ -43,12 +43,12 @@ let rec eval1 ctx t = match t with
       let t1' = eval1 ctx t1 in
       TmApp(fi, t1', t2)
   | TmRecord(fi,fields) ->
-      let rec evalafield l = match l with 
+      let rec evalafield l = match l with
         [] -> raise NoRuleApplies
-      | (l,vi)::rest when isval ctx vi -> 
+      | (l,vi)::rest when isval ctx vi ->
           let rest' = evalafield rest in
           (l,vi)::rest'
-      | (l,ti)::rest -> 
+      | (l,ti)::rest ->
           let ti' = eval1 ctx ti in
           (l, ti')::rest
       in let fields' = evalafield fields in
@@ -63,10 +63,10 @@ let rec eval1 ctx t = match t with
       TmFloat(fi, f1 *. f2)
   | TmTimesfloat(fi,(TmFloat(_,f1) as t1),t2) ->
       let t2' = eval1 ctx t2 in
-      TmTimesfloat(fi,t1,t2') 
+      TmTimesfloat(fi,t1,t2')
   | TmTimesfloat(fi,t1,t2) ->
       let t1' = eval1 ctx t1 in
-      TmTimesfloat(fi,t1',t2) 
+      TmTimesfloat(fi,t1',t2)
   | TmSucc(fi,t1) ->
       let t1' = eval1 ctx t1 in
       TmSucc(fi, t1')
@@ -85,11 +85,11 @@ let rec eval1 ctx t = match t with
       let t1' = eval1 ctx t1 in
       TmIsZero(fi, t1')
   | TmLet(fi,x,v1,t2) when isval ctx v1 ->
-      termSubstTop v1 t2 
+      termSubstTop v1 t2
   | TmLet(fi,x,t1,t2) ->
       let t1' = eval1 ctx t1 in
-      TmLet(fi, x, t1', t2) 
-  | _ -> 
+      TmLet(fi, x, t1', t2)
+  | _ ->
       raise NoRuleApplies
 
 let rec eval ctx t =
@@ -99,6 +99,6 @@ let rec eval ctx t =
 
 let evalbinding ctx b = match b with
     TmAbbBind(t) ->
-      let t' = eval ctx t in 
+      let t' = eval ctx t in
       TmAbbBind(t')
   | bind -> bind

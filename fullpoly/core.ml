@@ -35,10 +35,10 @@ let rec eval1 ctx t = match t with
       let t1' = eval1 ctx t1 in
       TmApp(fi, t1', t2)
   | TmLet(fi,x,v1,t2) when isval ctx v1 ->
-      termSubstTop v1 t2 
+      termSubstTop v1 t2
   | TmLet(fi,x,t1,t2) ->
       let t1' = eval1 ctx t1 in
-      TmLet(fi, x, t1', t2) 
+      TmLet(fi, x, t1', t2)
   | TmFix(fi,v1) as t when isval ctx v1 ->
       (match v1 with
          TmAbs(_,_,_,t12) -> termSubstTop t t12
@@ -52,12 +52,12 @@ let rec eval1 ctx t = match t with
       let t1' = eval1 ctx t1 in
       TmAscribe(fi,t1',tyT)
   | TmRecord(fi,fields) ->
-      let rec evalafield l = match l with 
+      let rec evalafield l = match l with
         [] -> raise NoRuleApplies
-      | (l,vi)::rest when isval ctx vi -> 
+      | (l,vi)::rest when isval ctx vi ->
           let rest' = evalafield rest in
           (l,vi)::rest'
-      | (l,ti)::rest -> 
+      | (l,ti)::rest ->
           let ti' = eval1 ctx ti in
           (l, ti')::rest
       in let fields' = evalafield fields in
@@ -79,10 +79,10 @@ let rec eval1 ctx t = match t with
       TmFloat(fi, f1 *. f2)
   | TmTimesfloat(fi,(TmFloat(_,f1) as t1),t2) ->
       let t2' = eval1 ctx t2 in
-      TmTimesfloat(fi,t1,t2') 
+      TmTimesfloat(fi,t1,t2')
   | TmTimesfloat(fi,t1,t2) ->
       let t1' = eval1 ctx t1 in
-      TmTimesfloat(fi,t1',t2) 
+      TmTimesfloat(fi,t1',t2)
   | TmSucc(fi,t1) ->
       let t1' = eval1 ctx t1 in
       TmSucc(fi, t1')
@@ -110,14 +110,14 @@ let rec eval1 ctx t = match t with
       TmPack(fi,tyT1,t2',tyT3)
   | TmVar(fi,n,_) ->
       (match getbinding fi ctx n with
-          TmAbbBind(t,_) -> t 
+          TmAbbBind(t,_) -> t
         | _ -> raise NoRuleApplies)
   | TmTApp(fi,TmTAbs(_,x,t11),tyT2) ->
       tytermSubstTop tyT2 t11
   | TmTApp(fi,t1,tyT2) ->
       let t1' = eval1 ctx t1 in
       TmTApp(fi, t1', tyT2)
-  | _ -> 
+  | _ ->
       raise NoRuleApplies
 
 let rec eval ctx t =
@@ -125,12 +125,12 @@ let rec eval ctx t =
       in eval ctx t'
   with NoRuleApplies -> t
 
-let istyabb ctx i = 
+let istyabb ctx i =
   match getbinding dummyinfo ctx i with
     TyAbbBind(tyT) -> true
   | _ -> false
 
-let gettyabb ctx i = 
+let gettyabb ctx i =
   match getbinding dummyinfo ctx i with
     TyAbbBind(tyT) -> tyT
   | _ -> raise NoRuleApplies
@@ -142,7 +142,7 @@ let rec computety ctx tyT = match tyT with
 let rec simplifyty ctx tyT =
   try
     let tyT' = computety ctx tyT in
-    simplifyty ctx tyT' 
+    simplifyty ctx tyT'
   with NoRuleApplies -> tyT
 
 let rec tyeqv ctx tyS tyT =
@@ -165,10 +165,10 @@ let rec tyeqv ctx tyS tyT =
   | (TySome(tyX1,tyS2),TySome(_,tyT2)) ->
        let ctx1 = addname ctx tyX1 in
        tyeqv ctx1 tyS2 tyT2
-  | (TyRecord(fields1),TyRecord(fields2)) -> 
+  | (TyRecord(fields1),TyRecord(fields2)) ->
        List.length fields1 = List.length fields2
-       &&                                         
-       List.for_all 
+       &&
+       List.for_all
          (fun (li2,tyTi2) ->
             try let (tyTi1) = List.assoc li2 fields1 in
                 tyeqv ctx tyTi1 tyTi2
@@ -200,7 +200,7 @@ let rec typeof ctx t =
         | _ -> error fi "arrow type expected")
   | TmLet(fi,x,t1,t2) ->
      let tyT1 = typeof ctx t1 in
-     let ctx' = addbinding ctx x (VarBind(tyT1)) in         
+     let ctx' = addbinding ctx x (VarBind(tyT1)) in
      typeShift (-1) (typeof ctx' t2)
   | TmFix(fi, t1) ->
       let tyT1 = typeof ctx t1 in
@@ -217,7 +217,7 @@ let rec typeof ctx t =
      else
        error fi "body of as-term does not have the expected type"
   | TmRecord(fi, fields) ->
-      let fieldtys = 
+      let fieldtys =
         List.map (fun (li,ti) -> (li, typeof ctx ti)) fields in
       TyRecord(fieldtys)
   | TmProj(fi, t1, l) ->
@@ -226,9 +226,9 @@ let rec typeof ctx t =
             (try List.assoc l fieldtys
              with Not_found -> error fi ("label "^l^" not found"))
         | _ -> error fi "Expected record type")
-  | TmTrue(fi) -> 
+  | TmTrue(fi) ->
       TyBool
-  | TmFalse(fi) -> 
+  | TmFalse(fi) ->
       TyBool
   | TmIf(fi,t1,t2,t3) ->
      if tyeqv ctx (typeof ctx t1) TyBool then
@@ -281,6 +281,6 @@ let rec typeof ctx t =
 
 let evalbinding ctx b = match b with
     TmAbbBind(t,tyT) ->
-      let t' = eval ctx t in 
+      let t' = eval ctx t in
       TmAbbBind(t',tyT)
   | bind -> bind

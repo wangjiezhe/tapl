@@ -6,7 +6,7 @@
 open Syntax
 open Support.Error
 
-val eval : context -> term -> term 
+val eval : context -> term -> term
 type constr
 type uvargenerator
 val uvargen : uvargenerator

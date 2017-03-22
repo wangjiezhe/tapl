@@ -1,10 +1,10 @@
-/* Imperative Objects 
+/* Imperative Objects
  * Replacement for Chapter 27, 32
  */
 
 /* Treat Object as syntactic
  * sugar -- a way to create types --- for now.
- * Ignore the "::*=>*" stuff here also.  
+ * Ignore the "::*=>*" stuff here also.
  */
 Object Methods::*=>* = {Some R, { state : R, methods : Methods R }};
 
@@ -16,11 +16,11 @@ Counter = Object CounterM;
 
 CounterRep = {c : Ref Nat};
 
-counterMethods = 
+counterMethods =
   {inc = lambda rep : CounterRep . rep.c := succ (!(rep.c)),
    get = lambda rep : CounterRep . !(rep.c) };
 
-sendinc = lambda c : Counter . 
+sendinc = lambda c : Counter .
   let {R, obj} = c in
     obj.methods.inc(obj.state);
 sendget = lambda c : Counter .
@@ -34,26 +34,26 @@ makeCounter =
 
 let c = makeCounter 3 in
   (sendinc c; sendinc c; sendget c);
-  
+
 SetCounterM R = {inc : R -> Unit, get : R -> Nat, set : R -> Nat -> Unit};
 
 SetCounter = Object SetCounterM;
 
 SetCounterRep = CounterRep;
 
-setCounterMethodsH = 
-  lambda R <: SetCounterRep . 
+setCounterMethodsH =
+  lambda R <: SetCounterRep .
     lambda self : Source (SetCounterM R) .
       let super = counterMethods in
-        {inc = lambda rep : R . 
+        {inc = lambda rep : R .
                  (!self).set rep (succ((!self).get rep)),
          get = super.get,
-         set = lambda rep : R . lambda n : Nat . rep.c := n } 
+         set = lambda rep : R . lambda n : Nat . rep.c := n }
       as SetCounterM R;
 
 univFunc = lambda x:Top . error;
 
-dummySetCounterMethods = 
+dummySetCounterMethods =
   { inc = univFunc, get = univFunc, set = univFunc }
   as SetCounterM SetCounterRep;
 
@@ -62,15 +62,15 @@ setCounterMethods =
     (vtable := setCounterMethodsH[SetCounterRep] vtable; !vtable);
 
 makeSetCounter = lambda n : Nat .
-  {* SetCounterRep, { state = {c = ref n}, methods = setCounterMethods } } 
+  {* SetCounterRep, { state = {c = ref n}, methods = setCounterMethods } }
   as SetCounter;
 
 let c = makeSetCounter 8 in
   (sendinc c; sendinc c; sendget c);
-  
 
-InstrSetCounterM R = { inc : R -> Unit, 
-                       get : R -> Nat, 
+
+InstrSetCounterM R = { inc : R -> Unit,
+                       get : R -> Nat,
                        set : R -> Nat -> Unit,
                        acc : R -> Nat };
 
@@ -88,13 +88,13 @@ instrSetCounterMethodsH =
       let super = setCounterMethodsH[R] self in
         {inc = super.inc,
          get = super.get,
-         set = lambda rep : R . 
-                 lambda n : Nat . 
+         set = lambda rep : R .
+                 lambda n : Nat .
                    (super.set rep n ; rep.a := (succ( !(rep.a)))),
          acc = lambda rep : R . !rep.a }
       as InstrSetCounterM R;
 
-dummyInstrSetCounterMethods = 
+dummyInstrSetCounterMethods =
   { inc = univFunc, get = univFunc, set = univFunc, acc = univFunc }
   as InstrSetCounterM InstrSetCounterRep;
 
@@ -129,16 +129,16 @@ sendclone =
         {* R, { state = obj.methods.clone(obj.state),
                 methods = obj.methods }} as Object M;
 
-CloneSetCounterM R = { inc : R -> Unit, 
-                       get : R -> Nat, 
-                       set : R -> Nat -> Unit, 
+CloneSetCounterM R = { inc : R -> Unit,
+                       get : R -> Nat,
+                       set : R -> Nat -> Unit,
                        clone : R -> R };
 
 CloneSetCounter = Object CloneSetCounterM;
 
 func = lambda cc : CloneSetCounter .
          (sendclone[CloneSetCounterM] cc) as CloneSetCounter;
-  
+
 CloneSetCounterRep = SetCounterRep;
 
 cloneSetCounterMethodsH =
@@ -157,7 +157,7 @@ dummyCloneSetCounterMethods =
     as CloneSetCounterM CloneSetCounterRep;
 
 makeCloneSetCounterRep = lambda n:Nat .
-    { c = ref n } 
+    { c = ref n }
     as CloneSetCounterRep;
 
 cloneSetCounterMethods =
@@ -167,7 +167,7 @@ cloneSetCounterMethods =
       !vtable);
 
 makeCloneSetCounter = lambda n : Nat .
-  {*CloneSetCounterRep, {state = makeCloneSetCounterRep n, 
+  {*CloneSetCounterRep, {state = makeCloneSetCounterRep n,
                         methods = cloneSetCounterMethods}}
   as CloneSetCounter;
 

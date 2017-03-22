@@ -1,4 +1,4 @@
-/*  
+/*
  *  Yacc grammar for the parser.  The files parser.mli and parser.ml
  *  are generated automatically from parser.mly.
  */
@@ -104,7 +104,7 @@ toplevel :
 
 /* A top-level command */
 Command :
-  | Term 
+  | Term
       { (let t = $1 in Eval(tmInfo t,t)) }
 
 Term :
@@ -125,8 +125,8 @@ AppTerm :
 
 /* Atomic terms are ones that never require extra parentheses */
 ATerm :
-    LPAREN Term RPAREN  
-      { $2 } 
+    LPAREN Term RPAREN
+      { $2 }
   | TRUE
       { TmTrue($1) }
   | FALSE
@@ -144,8 +144,8 @@ Type :
 
 /* Atomic types are those that never need extra parentheses */
 AType :
-    LPAREN Type RPAREN  
-           { $2 } 
+    LPAREN Type RPAREN
+           { $2 }
   | BOOL
       { TyBool }
   | NAT

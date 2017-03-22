@@ -10,9 +10,9 @@ type 'a withinfo = {i: info; v: 'a}
 let dummyinfo = UNKNOWN
 let createInfo f l c = FI(f, l, c)
 
-let errf f = 
-  print_flush(); 
-  open_vbox 0; 
+let errf f =
+  print_flush();
+  open_vbox 0;
   open_hvbox 0; f(); print_cut(); close_box(); print_newline();
   raise (Exit 1)
 
@@ -21,9 +21,9 @@ let printInfo =
      with the string "Error:" *)
   function
     FI(f,l,c) ->
-      print_string f; 
-      print_string ":"; 
-      print_int l; print_string "."; 
+      print_string f;
+      print_string ":";
+      print_int l; print_string ".";
       print_int c; print_string ":"
   | UNKNOWN ->
       print_string "<Unknown file and line>: "

@@ -20,12 +20,12 @@ let rec eval1 ctx t = match t with
       t3
   | TmVar(fi,n,_) ->
       (match getbinding fi ctx n with
-          TmAbbBind(t,_) -> t 
+          TmAbbBind(t,_) -> t
         | _ -> raise NoRuleApplies)
   | TmApp(_,TmError(fi),t2) ->
-      TmError(fi) 
+      TmError(fi)
   | TmApp(_,v1,TmError(fi)) when isval ctx v1 ->
-      TmError(fi) 
+      TmError(fi)
   | TmApp(fi,TmAbs(_,x,tyT11,t12),v2) when isval ctx v2 ->
       termSubstTop v2 t12
   | TmApp(fi,v1,t2) when isval ctx v1 ->
@@ -35,11 +35,11 @@ let rec eval1 ctx t = match t with
       let t1' = eval1 ctx t1 in
       TmApp(fi, t1', t2)
   | TmIf(_,TmError(fi),t2,t3) ->
-      TmError(fi) 
+      TmError(fi)
   | TmIf(fi,t1,t2,t3) ->
       let t1' = eval1 ctx t1 in
       TmIf(fi, t1', t2, t3)
-  | _ -> 
+  | _ ->
       raise NoRuleApplies
 
 let rec eval ctx t =
@@ -51,16 +51,16 @@ let rec eval ctx t =
 
 let evalbinding ctx b = match b with
     TmAbbBind(t,tyT) ->
-      let t' = eval ctx t in 
+      let t' = eval ctx t in
       TmAbbBind(t',tyT)
   | bind -> bind
 
-let istyabb ctx i = 
+let istyabb ctx i =
   match getbinding dummyinfo ctx i with
     TyAbbBind(tyT) -> true
   | _ -> false
 
-let gettyabb ctx i = 
+let gettyabb ctx i =
   match getbinding dummyinfo ctx i with
     TyAbbBind(tyT) -> tyT
   | _ -> raise NoRuleApplies
@@ -72,7 +72,7 @@ let rec computety ctx tyT = match tyT with
 let rec simplifyty ctx tyT =
   try
     let tyT' = computety ctx tyT in
-    simplifyty ctx tyT' 
+    simplifyty ctx tyT'
   with NoRuleApplies -> tyT
 
 let rec tyeqv ctx tyS tyT =
@@ -96,35 +96,35 @@ let rec subtype ctx tyS tyT =
    let tyS = simplifyty ctx tyS in
    let tyT = simplifyty ctx tyT in
    match (tyS,tyT) with
-     (_,TyTop) -> 
+     (_,TyTop) ->
        true
-   | (TyBot,_) -> 
+   | (TyBot,_) ->
        true
    | (TyArr(tyS1,tyS2),TyArr(tyT1,tyT2)) ->
        (subtype ctx tyT1 tyS1) && (subtype ctx tyS2 tyT2)
-   | (_,_) -> 
+   | (_,_) ->
        false
 
 let rec join ctx tyS tyT =
-  if subtype ctx tyS tyT then tyT else 
+  if subtype ctx tyS tyT then tyT else
   if subtype ctx tyT tyS then tyS else
   let tyS = simplifyty ctx tyS in
   let tyT = simplifyty ctx tyT in
   match (tyS,tyT) with
     (TyArr(tyS1,tyS2),TyArr(tyT1,tyT2)) ->
       TyArr(meet ctx  tyS1 tyT1, join ctx tyS2 tyT2)
-  | _ -> 
+  | _ ->
       TyTop
 
 and meet ctx tyS tyT =
-  if subtype ctx tyS tyT then tyS else 
-  if subtype ctx tyT tyS then tyT else 
+  if subtype ctx tyS tyT then tyS else
+  if subtype ctx tyT tyS then tyT else
   let tyS = simplifyty ctx tyS in
   let tyT = simplifyty ctx tyT in
   match (tyS,tyT) with
     (TyArr(tyS1,tyS2),TyArr(tyT1,tyT2)) ->
       TyArr(join ctx tyS1 tyT1, meet ctx tyS2 tyT2)
-  | _ -> 
+  | _ ->
       TyBot
 
 (* ------------------------   TYPING  ------------------------ *)
@@ -142,12 +142,12 @@ let rec typeof ctx t =
       (match simplifyty ctx tyT1 with
           TyArr(tyT11,tyT12) ->
             if subtype ctx tyT2 tyT11 then tyT12
-            else error fi "parameter type mismatch" 
+            else error fi "parameter type mismatch"
         | TyBot -> TyBot
         | _ -> error fi "arrow type expected")
-  | TmTrue(fi) -> 
+  | TmTrue(fi) ->
       TyBool
-  | TmFalse(fi) -> 
+  | TmFalse(fi) ->
       TyBool
   | TmIf(fi,t1,t2,t3) ->
       if subtype ctx (typeof ctx t1) TyBool then

@@ -21,7 +21,7 @@ type term =
   | TmIf of info * term * term * term
 
 type binding =
-    NameBind 
+    NameBind
   | VarBind of ty
 
 type command =
@@ -30,7 +30,7 @@ type command =
 
 (* Contexts *)
 type context
-val emptycontext : context 
+val emptycontext : context
 val ctxlength : context -> int
 val addbinding : context -> string -> binding -> context
 val addname: context -> string -> context

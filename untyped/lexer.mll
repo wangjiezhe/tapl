@@ -1,9 +1,9 @@
-(* 
+(*
    The lexical analyzer: lexer.ml is generated automatically
    from lexer.mll.
-   
-   The only modification commonly needed here is adding new keywords to the 
-   list of reserved words at the top.  
+
+   The only modification commonly needed here is adding new keywords to the
+   list of reserved words at the top.
 *)
 
 {
@@ -12,7 +12,7 @@ open Support.Error
 let reservedWords = [
   (* Keywords *)
   ("lambda", fun i -> Parser.LAMBDA i);
-  
+
   (* Symbols *)
   ("_", fun i -> Parser.USCORE i);
   ("'", fun i -> Parser.APOSTROPHE i);
@@ -30,13 +30,13 @@ let reservedWords = [
   ("::", fun i -> Parser.COLONCOLON i);
   ("=", fun i -> Parser.EQ i);
   ("==", fun i -> Parser.EQEQ i);
-  ("[", fun i -> Parser.LSQUARE i); 
+  ("[", fun i -> Parser.LSQUARE i);
   ("<", fun i -> Parser.LT i);
-  ("{", fun i -> Parser.LCURLY i); 
-  ("(", fun i -> Parser.LPAREN i); 
-  ("<-", fun i -> Parser.LEFTARROW i); 
-  ("{|", fun i -> Parser.LCURLYBAR i); 
-  ("[|", fun i -> Parser.LSQUAREBAR i); 
+  ("{", fun i -> Parser.LCURLY i);
+  ("(", fun i -> Parser.LPAREN i);
+  ("<-", fun i -> Parser.LEFTARROW i);
+  ("{|", fun i -> Parser.LCURLYBAR i);
+  ("[|", fun i -> Parser.LSQUAREBAR i);
   ("}", fun i -> Parser.RCURLY i);
   (")", fun i -> Parser.RPAREN i);
   ("]", fun i -> Parser.RSQUARE i);
@@ -64,7 +64,7 @@ let createID i str =
   with _ ->
     if (String.get str 0) >= 'A' && (String.get str 0) <= 'Z' then
        Parser.UCID {i=i;v=str}
-    else 
+    else
        Parser.LCID {i=i;v=str}
 
 let lineno   = ref 1
@@ -86,7 +86,7 @@ let info lexbuf =
 
 let text = Lexing.lexeme
 
-let stringBuffer = ref (String.create 2048)
+let stringBuffer = ref (Bytes.create 2048)
 let stringEnd = ref 0
 
 let resetStr () = stringEnd := 0
@@ -97,15 +97,15 @@ let addStr ch =
 in
   if x = String.length buffer then
     begin
-      let newBuffer = String.create (x*2) in
+      let newBuffer = Bytes.create (x*2) in
       String.blit buffer 0 newBuffer 0 x;
-      String.set newBuffer x ch;
+      Bytes.set newBuffer x ch;
       stringBuffer := newBuffer;
       stringEnd := x+1
     end
   else
     begin
-      String.set buffer x ch;
+      Bytes.set buffer x ch;
       stringEnd := x+1
     end
 

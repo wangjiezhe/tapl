@@ -26,7 +26,7 @@ let rec eval1 ctx t = match t with
   | TmTApp(fi,t1,tyT2) ->
       let t1' = eval1 ctx t1 in
       TmTApp(fi, t1', tyT2)
-  | _ -> 
+  | _ ->
       raise NoRuleApplies
 
 let rec eval ctx t =
@@ -41,14 +41,14 @@ let rec computety ctx tyT = match tyT with
   | _ -> raise NoRuleApplies
 
 let rec simplifyty ctx tyT =
-  let tyT = 
+  let tyT =
     match tyT with
         TyApp(tyT1,tyT2) -> TyApp(simplifyty ctx tyT1,tyT2)
       | tyT -> tyT
-  in 
+  in
   try
     let tyT' = computety ctx tyT in
-    simplifyty ctx tyT' 
+    simplifyty ctx tyT'
   with NoRuleApplies -> tyT
 
 let rec tyeqv ctx tyS tyT =
@@ -73,7 +73,7 @@ let rec tyeqv ctx tyS tyT =
 let getkind fi ctx i =
   match getbinding fi ctx i with
       TyVarBind(knK) -> knK
-    | _ -> error fi ("getkind: Wrong kind of binding for variable " 
+    | _ -> error fi ("getkind: Wrong kind of binding for variable "
                      ^ (index2name fi ctx i))
 
 let rec kindof ctx tyT = match tyT with
@@ -102,7 +102,7 @@ let rec kindof ctx tyT = match tyT with
       KnStar
   | _ -> KnStar
 
-let checkkindstar fi ctx tyT = 
+let checkkindstar fi ctx tyT =
   let k = kindof ctx tyT in
   if k = KnStar then ()
   else error fi "Kind * expected"

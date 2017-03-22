@@ -20,7 +20,7 @@ let rec eval1 ctx t = match t with
   | TmApp(fi,t1,t2) ->
       let t1' = eval1 ctx t1 in
       TmApp(fi, t1', t2)
-  | _ -> 
+  | _ ->
       raise NoRuleApplies
 
 let rec eval ctx t =

@@ -1,7 +1,7 @@
 (* module Support
 
    Collects a number of low-level facilities used by the other modules
-   in the typechecker/evaluator. 
+   in the typechecker/evaluator.
 *)
 
 (* ------------------------------------------------------------------------ *)
@@ -9,7 +9,7 @@
 
 module Pervasive : sig
   val pr : string -> unit
-end  
+end
 
 (* ------------------------------------------------------------------------ *)
 (* Error printing utilities -- opened everywhere by convention *)
@@ -20,8 +20,8 @@ module Error : sig
      an exit status for the whole program. *)
   exception Exit of int
 
-  (* An element of the type info represents a "file position": a 
-     file name, line number, and character position within the line.  
+  (* An element of the type info represents a "file position": a
+     file name, line number, and character position within the line.
      Used for printing error messages. *)
   type info
   val dummyinfo : info

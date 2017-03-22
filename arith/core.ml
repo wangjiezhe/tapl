@@ -43,7 +43,7 @@ let rec eval1 t = match t with
   | TmIsZero(fi,t1) ->
       let t1' = eval1 t1 in
       TmIsZero(fi, t1')
-  | _ -> 
+  | _ ->
       raise NoRuleApplies
 
 let rec eval t =

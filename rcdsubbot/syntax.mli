@@ -18,7 +18,7 @@ type term =
   | TmProj of info * term * string
 
 type binding =
-    NameBind 
+    NameBind
   | VarBind of ty
 
 type command =
@@ -27,7 +27,7 @@ type command =
 
 (* Contexts *)
 type context
-val emptycontext : context 
+val emptycontext : context
 val ctxlength : context -> int
 val addbinding : context -> string -> binding -> context
 val addname: context -> string -> context

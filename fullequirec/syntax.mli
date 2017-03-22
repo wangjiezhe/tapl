@@ -42,7 +42,7 @@ type term =
   | TmFix of info * term
 
 type binding =
-    NameBind 
+    NameBind
   | TmAbbBind of term * (ty option)
   | VarBind of ty
   | TyVarBind
@@ -54,7 +54,7 @@ type command =
 
 (* Contexts *)
 type context
-val emptycontext : context 
+val emptycontext : context
 val ctxlength : context -> int
 val addbinding : context -> string -> binding -> context
 val addname: context -> string -> context

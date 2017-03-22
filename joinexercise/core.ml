@@ -24,12 +24,12 @@ let rec eval1 ctx t = match t with
       let t1' = eval1 ctx t1 in
       TmApp(fi, t1', t2)
   | TmRecord(fi,fields) ->
-      let rec evalafield l = match l with 
+      let rec evalafield l = match l with
         [] -> raise NoRuleApplies
-      | (l,vi)::rest when isval ctx vi -> 
+      | (l,vi)::rest when isval ctx vi ->
           let rest' = evalafield rest in
           (l,vi)::rest'
-      | (l,ti)::rest -> 
+      | (l,ti)::rest ->
           let ti' = eval1 ctx ti in
           (l, ti')::rest
       in let fields' = evalafield fields in
@@ -47,7 +47,7 @@ let rec eval1 ctx t = match t with
   | TmIf(fi,t1,t2,t3) ->
       let t1' = eval1 ctx t1 in
       TmIf(fi, t1', t2, t3)
-  | _ -> 
+  | _ ->
       raise NoRuleApplies
 
 let rec eval ctx t =
@@ -60,18 +60,18 @@ let rec eval ctx t =
 let rec subtype tyS tyT =
    (=) tyS tyT ||
    match (tyS,tyT) with
-     (_,TyTop) -> 
+     (_,TyTop) ->
        true
    | (TyArr(tyS1,tyS2),TyArr(tyT1,tyT2)) ->
        (subtype tyT1 tyS1) && (subtype tyS2 tyT2)
    | (TyRecord(fS), TyRecord(fT)) ->
        List.for_all
-         (fun (li,tyTi) -> 
+         (fun (li,tyTi) ->
             try let tySi = List.assoc li fS in
                 subtype tySi tyTi
             with Not_found -> false)
          fT
-   | (_,_) -> 
+   | (_,_) ->
        false
 
 let rec join tyS tyT =
@@ -98,7 +98,7 @@ let rec typeof ctx t =
             else error fi "parameter type mismatch"
         | _ -> error fi "arrow type expected")
   | TmRecord(fi, fields) ->
-      let fieldtys = 
+      let fieldtys =
         List.map (fun (li,ti) -> (li, typeof ctx ti)) fields in
       TyRecord(fieldtys)
   | TmProj(fi, t1, l) ->
@@ -107,9 +107,9 @@ let rec typeof ctx t =
             (try List.assoc l fieldtys
              with Not_found -> error fi ("label "^l^" not found"))
         | _ -> error fi "Expected record type")
-  | TmTrue(fi) -> 
+  | TmTrue(fi) ->
       TyBool
-  | TmFalse(fi) -> 
+  | TmFalse(fi) ->
       TyBool
   | TmIf(fi,t1,t2,t3) ->
       (* write me *) assert false

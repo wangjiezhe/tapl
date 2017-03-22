@@ -21,10 +21,10 @@ let rec isval ctx t = match t with
 
 let rec eval1 ctx t = match t with
     TmLet(fi,x,v1,t2) when isval ctx v1 ->
-      termSubstTop v1 t2 
+      termSubstTop v1 t2
   | TmLet(fi,x,t1,t2) ->
       let t1' = eval1 ctx t1 in
-      TmLet(fi, x, t1', t2) 
+      TmLet(fi, x, t1', t2)
   | TmIf(_,TmTrue(_),t2,t3) ->
       t2
   | TmIf(_,TmFalse(_),t2,t3) ->
@@ -57,7 +57,7 @@ let rec eval1 ctx t = match t with
   | TmApp(fi,t1,t2) ->
       let t1' = eval1 ctx t1 in
       TmApp(fi, t1', t2)
-  | _ -> 
+  | _ ->
       raise NoRuleApplies
 
 let rec eval ctx t =
@@ -79,7 +79,7 @@ let prconstr constr =
       [] -> ()
     | [c] -> pc c
     | c::rest -> (pc c; pr ", "; f rest)
-  in 
+  in
     pr "{"; f constr; pr "}"
 
 type nextuvar = NextUVar of string * uvargenerator
@@ -91,7 +91,7 @@ let uvargen =
 
 let rec recon ctx nextuvar t =
   match t with
-      TmVar(fi,i,_) -> 
+      TmVar(fi,i,_) ->
         let tyT = getTypeFromContext fi ctx i in
         (tyT, nextuvar, [])
     | TmAbs(fi, x, Some(tyT1), t2) ->
@@ -111,9 +111,9 @@ let rec recon ctx nextuvar t =
         let newconstr = [(tyT1,TyArr(tyT2,TyId(tyX)))] in
         ((TyId(tyX)), nextuvar', List.concat [newconstr; constr1; constr2])
     | TmLet(fi, x, t1, t2) ->
-        if not (isval ctx t1) then 
+        if not (isval ctx t1) then
           let (tyT1,nextuvar1,constr1) = recon ctx nextuvar t1 in
-          let ctx1 = addbinding ctx x (VarBind(tyT1)) in         
+          let ctx1 = addbinding ctx x (VarBind(tyT1)) in
           let (tyT2,nextuvar2,constr2) = recon ctx1 nextuvar1 t2 in
           (tyT2, nextuvar2, constr1@constr2)
         else
@@ -127,7 +127,7 @@ let rec recon ctx nextuvar t =
         (TyNat, nextuvar1, (tyT1,TyNat)::constr1)
     | TmIsZero(fi,t1) ->
         let (tyT1,nextuvar1,constr1) = recon ctx nextuvar t1 in
-        (TyBool, nextuvar1, (tyT1,TyNat)::constr1) 
+        (TyBool, nextuvar1, (tyT1,TyNat)::constr1)
     | TmTrue(fi) -> (TyBool, nextuvar, [])
     | TmFalse(fi) -> (TyBool, nextuvar, [])
     | TmIf(fi,t1,t2,t3) ->
@@ -141,7 +141,7 @@ let substinty tyX tyT tyS =
   let rec f tyS = match tyS with
       TyArr(tyS1,tyS2) -> TyArr(f tyS1, f tyS2)
     | TyNat -> TyNat
-    | TyBool -> TyBool 
+    | TyBool -> TyBool
     | TyId(s) -> if s=tyX then tyT else TyId(s)
   in f tyS
 
@@ -172,7 +172,7 @@ let unify fi ctx msg constr =
         else if occursin tyX tyS then
           error fi (msg ^ ": circular constraints")
         else
-          List.append (u (substinconstr tyX tyS rest)) 
+          List.append (u (substinconstr tyX tyS rest))
                       [(TyId(tyX),tyS)]
     | (TyId(tyX),tyT) :: rest ->
         if tyT = TyId(tyX) then u rest
@@ -185,7 +185,7 @@ let unify fi ctx msg constr =
     | (TyBool,TyBool) :: rest -> u rest
     | (TyArr(tyS1,tyS2),TyArr(tyT1,tyT2)) :: rest ->
         u ((tyS1,tyT1) :: (tyS2,tyT2) :: rest)
-    | (tyS,tyT)::rest -> 
+    | (tyS,tyT)::rest ->
         error fi "Unsolvable constraints"
   in
     u constr

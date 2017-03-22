@@ -29,7 +29,7 @@ let rec eval1 ctx t = match t with
   | TmIf(fi,t1,t2,t3) ->
       let t1' = eval1 ctx t1 in
       TmIf(fi, t1', t2, t3)
-  | _ -> 
+  | _ ->
       raise NoRuleApplies
 
 let rec eval ctx t =
@@ -54,9 +54,9 @@ let rec typeof ctx t =
             if (=) tyT2 tyT11 then tyT12
             else error fi "parameter type mismatch"
         | _ -> error fi "arrow type expected")
-  | TmTrue(fi) -> 
+  | TmTrue(fi) ->
       TyBool
-  | TmFalse(fi) -> 
+  | TmFalse(fi) ->
       TyBool
   | TmIf(fi,t1,t2,t3) ->
      if (=) (typeof ctx t1) TyBool then
