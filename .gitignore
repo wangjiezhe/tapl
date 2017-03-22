@@ -1,0 +1,32 @@
+*.annot
+*.cmo
+*.cma
+*.cmi
+*.a
+*.o
+*.cmx
+*.cmxs
+*.cmxa
+
+# ocamlbuild working directory
+_build/
+
+# ocamlbuild targets
+*.byte
+*.native
+
+# oasis generated files
+setup.data
+setup.log
+
+# generated file
+f
+lexer.ml
+parser.ml
+parser.mli
+parser.mll
+parser.output
+
+# vim
+*~
+*.swp
