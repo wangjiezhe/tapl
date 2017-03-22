@@ -30,3 +30,7 @@ lambda x:Nat. succ x;
 T = Nat->Nat;
 lambda f:T. lambda x:Nat. f (f x);
 
+lambda t:Nat. lambda t:Nat. t;
+
+a: Nat;
+(lambda b:T. (lambda a:T. b)) (lambda c:Nat. a);
