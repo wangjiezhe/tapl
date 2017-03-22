@@ -34,3 +34,11 @@ lambda t:Nat. lambda t:Nat. t;
 
 a: Nat;
 (lambda b:T. (lambda a:T. b)) (lambda c:Nat. a);
+
+plus =
+  fix (lambda f:Nat->Nat->Nat. lambda a:Nat. lambda b:Nat.
+         if iszero b then a else f (succ a) (pred b));
+
+plus 10 0;
+plus 5 6;
+plus 0 12;
