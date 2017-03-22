@@ -52,8 +52,8 @@ let alreadyImported = ref ([] : string list)
 
 let rec process_command  cmd = match cmd with
   | Eval(fi,t) ->
-      let t' = eval t in
-      printtm_ATerm true t';
+      let t' = size t in
+      pr (string_of_int t');
       force_newline();
       ()
 

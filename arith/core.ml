@@ -50,3 +50,16 @@ let rec eval t =
   try let t' = eval1 t
       in eval t'
   with NoRuleApplies -> t
+
+
+(* size *)
+
+let rec size t = match t with
+    TmTrue(_) -> 1
+  | TmFalse(_) -> 1
+  | TmZero(_) -> 1
+  | t when isnumericval t -> 1
+  | TmSucc(_, t1)
+    | TmPred(_, t1)
+    | TmIsZero(_, t1) -> (size t1) + 1
+  | TmIf(_, t1, t2, t3) -> (size t1) + (size t2) + (size t3) + 1
