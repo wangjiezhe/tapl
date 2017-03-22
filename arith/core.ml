@@ -58,7 +58,6 @@ let rec size t = match t with
     TmTrue(_) -> 1
   | TmFalse(_) -> 1
   | TmZero(_) -> 1
-  | t when isnumericval t -> 1
   | TmSucc(_, t1)
     | TmPred(_, t1)
     | TmIsZero(_, t1) -> (size t1) + 1
